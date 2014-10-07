@@ -8,6 +8,10 @@ module Actn
       
       def setup
        
+        @wrk_pid = fork do
+          Worker.start
+        end
+        Process.detach @wrk_pid
         
         @model = DB::Model.create(
         {
@@ -38,12 +42,9 @@ module Actn
           }
         }
         )
-        puts @model.inspect
+        # puts @model.inspect
         
-        @wrk_pid = fork do
-          Worker.start
-        end
-        Process.detach @wrk_pid
+        
       end
       
       def teardown
@@ -55,7 +56,7 @@ module Actn
         json = DB::Set['cars'].upsert(brand: "Ford")
         uuid = Oj.load(json)['uuid']
 
-        puts Job.all.inspect
+        # puts Job.all.inspect
 
         assert_equal 2, Job.count({where: {'hook.callback' => "after_create"}})
         
