@@ -8,7 +8,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 
 ENV['RACK_ENV'] = "test"
-ENV['DATABASE_URL'] = "postgres://localhost:5432/actn_test" 
+ENV['DATABASE_URL'] ||= "postgres://localhost:5432/actn_test" 
 I18n.enforce_available_locales = false
 
 class  MiniTest::Test
