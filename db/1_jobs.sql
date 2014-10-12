@@ -4,25 +4,19 @@ SELECT plv8_startup();
 
 SELECT __create_table('core','jobs');
 
-CREATE or REPLACE FUNCTION hook_trigger() RETURNS trigger AS
-$$
-  actn.funcs.hook_trigger(TG_TABLE_NAME, TG_OP, NEW, OLD);
 
-    
+
+CREATE or REPLACE FUNCTION hook_trigger() RETURNS trigger AS $$
+  actn.jobs.hook_trigger(TG_TABLE_NAME, TG_OP, NEW, OLD);
 $$ LANGUAGE plv8 STABLE STRICT;
 
 
 
-
-
-
-CREATE or REPLACE FUNCTION jobs_model_callbacks() RETURNS trigger AS
-$$
-  actn.funcs.jobs_model_callbacks(TG_TABLE_NAME, TG_OP, NEW, OLD)
-                    
-
-    
+CREATE or REPLACE FUNCTION jobs_model_callbacks() RETURNS trigger AS $$
+  actn.jobs.jobs_model_callbacks(TG_TABLE_NAME, TG_OP, NEW, OLD)
 $$ LANGUAGE plv8 STABLE STRICT;
+
+
 
 CREATE TRIGGER jobs_core_models_callback_trigger 
 AFTER INSERT OR UPDATE OR DELETE ON core.models
