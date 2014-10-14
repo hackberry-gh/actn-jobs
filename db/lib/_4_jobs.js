@@ -5,8 +5,8 @@
   Jobs = (function() {
     function Jobs() {}
 
-    Jobs.prototype.hook_trigger = function(TG_TABLE_NAME, TG_OP, NEW, OLD) {
-      var callback, hook, job, model, res, upsert_func, _i, _len, _ref, _ref1, _ref2, _ref3, _results;
+    Jobs.prototype.model_trigger = function(TG_TABLE_NAME, TG_OP, NEW, OLD) {
+      var callback, hook, job, live_data, model, res, upsert_func, _i, _len, _ref, _ref1, _ref2, _ref3, _results;
       upsert_func = plv8.find_function("__upsert");
       model = JSON.parse(plv8.find_function("__find_model")(TG_TABLE_NAME.classify()));
       callback = {
@@ -14,6 +14,13 @@
         UPDATE: "after_update",
         DELETE: "after_destroy"
       }[TG_OP];
+      live_data = JSON.stringify({
+        table_name: TG_TABLE_NAME,
+        op: TG_OP,
+        data: (NEW || OLD).data
+      });
+      plv8.elog(NOTICE, "LIVE DATA", live_data);
+      plv8.execute("SELECT pg_notify('live', $1);", [live_data]);
       _ref1 = (model != null ? (_ref = model.hooks) != null ? _ref[callback] : void 0 : void 0) || [];
       _results = [];
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -45,7 +52,7 @@
         plv8.execute("DELETE FROM core.jobs WHERE __string(data, 'table_name'::text) = $1;", [table_name]);
       }
       if (TG_OP === "INSERT" || TG_OP === "UPDATE" && (NEW.data.hooks != null) && (OLD.data.hooks == null)) {
-        return plv8.execute("CREATE TRIGGER " + table_schema + "_" + table_name + "_hook_trigger \nAFTER INSERT OR UPDATE OR DELETE ON " + table_schema + "." + table_name + " \nFOR EACH ROW EXECUTE PROCEDURE hook_trigger();");
+        return plv8.execute("CREATE TRIGGER " + table_schema + "_" + table_name + "_model_trigger \nAFTER INSERT OR UPDATE OR DELETE ON " + table_schema + "." + table_name + " \nFOR EACH ROW EXECUTE PROCEDURE model_trigger();");
       }
     };
 

@@ -6,8 +6,8 @@ SELECT __create_table('core','jobs');
 
 
 
-CREATE or REPLACE FUNCTION hook_trigger() RETURNS trigger AS $$
-  actn.jobs.hook_trigger(TG_TABLE_NAME, TG_OP, NEW, OLD);
+CREATE or REPLACE FUNCTION model_trigger() RETURNS trigger AS $$
+  actn.jobs.model_trigger(TG_TABLE_NAME, TG_OP, NEW, OLD);
 $$ LANGUAGE plv8 STABLE STRICT;
 
 

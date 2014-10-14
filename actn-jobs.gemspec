@@ -21,5 +21,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest"
   
-   # spec.add_dependency 'actn-db', '~> 0.0.4'
+  # spec.add_dependency 'actn-db', '~> 0.0.4'
+  spec.add_dependency 'websocket-eventmachine-client'
 end

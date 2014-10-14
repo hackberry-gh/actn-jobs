@@ -3,7 +3,7 @@
   
   class Jobs
     
-    hook_trigger: (TG_TABLE_NAME, TG_OP, NEW, OLD) ->
+    model_trigger: (TG_TABLE_NAME, TG_OP, NEW, OLD) ->
       upsert_func = plv8.find_function("__upsert")
       model = JSON.parse(plv8.find_function("__find_model")(TG_TABLE_NAME.classify()))
 
@@ -13,7 +13,9 @@
         DELETE: "after_destroy"
       }[TG_OP]  
   
-      # plv8.elog(NOTICE,"HOOK TRIGGER",JSON.stringify(model))
+      live_data = JSON.stringify({table_name: TG_TABLE_NAME, op: TG_OP, data: (NEW || OLD).data})
+      plv8.elog(NOTICE,"LIVE DATA",live_data)
+      plv8.execute "SELECT pg_notify('live', $1);", [live_data]
   
       for hook in model?.hooks?[callback] or []
         hook.run_at ?= new Date()
@@ -41,13 +43,13 @@
         plv8.execute "DELETE FROM core.jobs WHERE __string(data, 'table_name'::text) = $1;", [table_name]
 
       # if TG_OP is "DELETE" and OLD.data.hooks? or TG_OP is "UPDATE" and NEW.data.hooks?
-      #   plv8.execute "DROP TRIGGER IF EXISTS #{table_schema}_#{table_name}_hook_trigger ON #{table_schema}.#{table_name}"
+      #   plv8.execute "DROP TRIGGER IF EXISTS #{table_schema}_#{table_name}_model_trigger ON #{table_schema}.#{table_name}"
 
   
       if TG_OP is "INSERT" or TG_OP is "UPDATE" and NEW.data.hooks? and not OLD.data.hooks?
-        plv8.execute """CREATE TRIGGER #{table_schema}_#{table_name}_hook_trigger 
+        plv8.execute """CREATE TRIGGER #{table_schema}_#{table_name}_model_trigger 
                       AFTER INSERT OR UPDATE OR DELETE ON #{table_schema}.#{table_name} 
-                      FOR EACH ROW EXECUTE PROCEDURE hook_trigger();"""
+                      FOR EACH ROW EXECUTE PROCEDURE model_trigger();"""
 
 
 
