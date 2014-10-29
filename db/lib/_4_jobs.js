@@ -6,7 +6,7 @@
     function Jobs() {}
 
     Jobs.prototype.model_trigger = function(TG_TABLE_NAME, TG_OP, NEW, OLD) {
-      var callback, hook, job, live_data, model, res, upsert_func, _i, _len, _ref, _ref1, _ref2, _ref3, _results;
+      var callback, hook, job, live_data, model, res, upsert_func, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _results;
       upsert_func = plv8.find_function("__upsert");
       model = JSON.parse(plv8.find_function("__find_model")(TG_TABLE_NAME.classify()));
       callback = {
@@ -19,12 +19,12 @@
         op: TG_OP,
         data: (NEW || OLD).data
       });
-      plv8.elog(NOTICE, "LIVE DATA", live_data);
       plv8.execute("SELECT pg_notify('live', $1);", [live_data]);
-      _ref1 = (model != null ? (_ref = model.hooks) != null ? _ref[callback] : void 0 : void 0) || [];
+      plv8.elog(NOTICE, "HOOKS", JSON.stringify(model != null ? (_ref = model.hooks) != null ? _ref[callback] : void 0 : void 0));
+      _ref2 = (model != null ? (_ref1 = model.hooks) != null ? _ref1[callback] : void 0 : void 0) || [];
       _results = [];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        hook = _ref1[_i];
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        hook = _ref2[_i];
         if (hook.run_at == null) {
           hook.run_at = new Date();
         }
@@ -32,7 +32,7 @@
         job = {
           hook: hook,
           table_name: TG_TABLE_NAME,
-          record_uuid: (NEW != null ? (_ref2 = NEW.data) != null ? _ref2.uuid : void 0 : void 0) || (OLD != null ? (_ref3 = OLD.data) != null ? _ref3.uuid : void 0 : void 0),
+          record_uuid: (NEW != null ? (_ref3 = NEW.data) != null ? _ref3.uuid : void 0 : void 0) || (OLD != null ? (_ref4 = OLD.data) != null ? _ref4.uuid : void 0 : void 0),
           record: TG_OP === "DELETE" ? OLD.data : void 0
         };
         res = upsert_func("core", "jobs", JSON.stringify(job));

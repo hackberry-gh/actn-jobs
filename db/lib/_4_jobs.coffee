@@ -14,8 +14,10 @@
       }[TG_OP]  
   
       live_data = JSON.stringify({table_name: TG_TABLE_NAME, op: TG_OP, data: (NEW || OLD).data})
-      plv8.elog(NOTICE,"LIVE DATA",live_data)
+      # plv8.elog(NOTICE,"LIVE DATA",live_data)
       plv8.execute "SELECT pg_notify('live', $1);", [live_data]
+  
+      # plv8.elog(NOTICE,"HOOKS",JSON.stringify(model?.hooks?),callback)
   
       for hook in model?.hooks?[callback] or []
         hook.run_at ?= new Date()
