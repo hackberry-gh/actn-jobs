@@ -9,6 +9,9 @@ require 'minitest/pride'
 
 ENV['RACK_ENV'] = "test"
 ENV['DATABASE_URL'] ||= "postgres://localhost:5432/actn_test" 
+
+puts ENV['DATABASE_URL']
+
 I18n.enforce_available_locales = false
 
 class  MiniTest::Test

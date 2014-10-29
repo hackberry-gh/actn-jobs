@@ -15,7 +15,9 @@ module Actn
         
         @model = DB::Model.create(
         {
+          table_schema: "public",
           name: "Car",
+          schema: { type: "object" },
           hooks: { 
             after_create: [
               {
@@ -42,14 +44,14 @@ module Actn
           }
         }
         )
-        # puts @model.inspect
         
+        assert @model.persisted?
         
       end
       
       def teardown
         Process.kill 'TERM', @wrk_pid
-        @model.destroy
+        @model.destroy if @model
       end
       
       def test_jobs
