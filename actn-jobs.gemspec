@@ -23,4 +23,5 @@ Gem::Specification.new do |spec|
   
   # spec.add_dependency 'actn-db', '~> 0.0.4'
   spec.add_dependency 'websocket-eventmachine-client'
+  spec.add_dependency 'em-http-request'  
 end

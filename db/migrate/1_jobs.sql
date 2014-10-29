@@ -1,6 +1,6 @@
 SET search_path TO public;
 
-SELECT plv8_startup();
+-- SELECT plv8_startup();
 
 SELECT __create_table('core','jobs');
 
@@ -17,7 +17,7 @@ CREATE or REPLACE FUNCTION jobs_model_callbacks() RETURNS trigger AS $$
 $$ LANGUAGE plv8 STABLE STRICT;
 
 
-
+DROP TRIGGER IF EXISTS jobs_core_models_callback_trigger on core.models;
 CREATE TRIGGER jobs_core_models_callback_trigger 
 AFTER INSERT OR UPDATE OR DELETE ON core.models
 FOR EACH ROW EXECUTE PROCEDURE jobs_model_callbacks();

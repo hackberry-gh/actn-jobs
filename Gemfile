@@ -4,5 +4,5 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
-gem 'actn-db', path: '../db'
+  gem 'actn-db', path: '../db'
 end

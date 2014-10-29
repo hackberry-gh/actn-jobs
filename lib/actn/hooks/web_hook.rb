@@ -1,5 +1,5 @@
 require 'actn/jobs/base'
-require 'em-synchrony/em-http'
+require 'em-http-request'
 # require 'httparty'
 
 class WebHook < Actn::Jobs::Base

@@ -4,8 +4,9 @@
   class Jobs
     
     model_trigger: (TG_TABLE_NAME, TG_OP, NEW, OLD) ->
-      upsert_func = plv8.find_function("__upsert")
-      model = JSON.parse(plv8.find_function("__find_model")(TG_TABLE_NAME.classify()))
+      upsert_func = root.actn.funcs.__upsert #plv8.find_function("__upsert")
+      # model = JSON.parse(plv8.find_function("__find_model")(TG_TABLE_NAME.classify()))
+      model = JSON.parse(root.actn.funcs.__find_model(TG_TABLE_NAME.classify()))        
 
       callback  = {
         INSERT: "after_create"     
