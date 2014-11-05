@@ -1,6 +1,6 @@
 SET search_path TO public;
 
--- SELECT plv8_startup();
+SELECT plv8_startup();
 
 SELECT __create_table('core','jobs');
 
