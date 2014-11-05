@@ -1,4 +1,5 @@
-SET search_path TO public;
+CREATE SCHEMA IF NOT EXISTS core;
+SET search_path TO core,public;
 
 SELECT plv8_startup();
 
